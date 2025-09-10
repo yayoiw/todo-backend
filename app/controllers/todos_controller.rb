@@ -1,4 +1,5 @@
 class TodosController < ApplicationController
+  before_action :set_todo, only: [ :update, :destroy ]
   def index
     todos = Todo.all
     render json: todos
@@ -14,21 +15,22 @@ class TodosController < ApplicationController
   end
 
   def update
-    todo = Todo.find(params[:id])
-    if todo.update(todo_params)
-      render json: todo
+    if @todo.update(todo_params)
+      render json: @todo
     else
-      render json: todo.errors, status: :unprocessable_entity
+      render json: @todo.errors, status: :unprocessable_entity
     end
   end
 
   def destroy
-    todo = Todo.find(params[:id])
-    todo.destroy
+    @todo.destroy
     head :no_content
   end
 
   private
+    def set_todo
+      @todo = Todo.find(params[:id])
+    end
 
     def todo_params
       params.expect(todo: [ :title, :completed ])
